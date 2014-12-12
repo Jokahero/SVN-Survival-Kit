@@ -1,4 +1,4 @@
-STASH_DIRECTORY="~/.ssk_stashes"
+STASH_DIRECTORY="$HOME/.ssk_stashes"
 STASH_EXT=".stash"
 UNAMED_STASH_NAME="unamed"
 
