@@ -67,6 +67,17 @@ __stash() {
 					fi
 				fi
 				;;
+			"delete" | "del")
+				shift
+				if [ $# -eq 0 ] ; then
+					echo "ERROR : you must provide a stash name when using 'svn stash delete'"
+				else
+					file=$STASH_DIRECTORY/$1$STASH_EXT
+					if [ -f $file ] ; then
+						rm $file
+					fi
+				fi
+				;;
 			*)
 				file=$STASH_DIRECTORY/$1$STASH_EXT
 				if [ -f $file ] ; then
