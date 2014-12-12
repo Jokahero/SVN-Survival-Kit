@@ -34,11 +34,13 @@ __diff() {
 #
 __stash() {
 	if [ $# -eq 0 ] ; then
-		file=$STASH_DIRECTORY/$UNAMED_STASH_NAME$STASH_EXT
+		repo_id=`__get_repository_id`
+		directory=$STASH_DIRECTORY/$repo_id
+		file=$UNAMED_STASH_NAME$STASH_EXT
 		if [ -f $file ] ; then
 			echo "ERROR : some changes are already stashed"
 		else
-			__store_stash $file
+			__store_stash $directory $file
 		fi
 	else
 		case "$1" in
@@ -46,7 +48,8 @@ __stash() {
 				ls $STASH_DIRECTORY | awk -F. '{print $1}'	
 				;;
 			"pop")
-				file=$STASH_DIRECTORY/$UNAMED_STASH_NAME$STASH_EXT
+				repo_id=`__get_repository_id`
+				file=$STASH_DIRECTORY/$repo_id/$1$STASH_EXT
 				if [ -f $file ] ; then
 					__apply_patch $file
 					rm $file
@@ -59,7 +62,8 @@ __stash() {
 				if [ $# -eq 0 ] ; then
 					echo "ERROR : you must provide a stash name when using 'svn stash apply'"
 				else
-					file=$STASH_DIRECTORY/$1$STASH_EXT
+					repo_id=`__get_repository_id`
+					file=$STASH_DIRECTORY/$repo_id/$1$STASH_EXT
 					if [ -f $file ] ; then
 						__apply_patch $file
 					else
@@ -72,18 +76,21 @@ __stash() {
 				if [ $# -eq 0 ] ; then
 					echo "ERROR : you must provide a stash name when using 'svn stash delete'"
 				else
-					file=$STASH_DIRECTORY/$1$STASH_EXT
+					repo_id=`__get_repository_id`
+					file=$STASH_DIRECTORY/$repo_id/$1$STASH_EXT
 					if [ -f $file ] ; then
 						rm $file
 					fi
 				fi
 				;;
 			*)
-				file=$STASH_DIRECTORY/$1$STASH_EXT
+				repo_id=`__get_repository_id`
+				directory=$STASH_DIRECTORY/$repo_id
+				file=$1$STASH_EXT
 				if [ -f $file ] ; then
 					echo "ERROR : $1 is an already existing stash"
 				else
-					__store_stash $file
+					__store_stash $directory $file
 				fi
 				;;
 		esac
@@ -102,11 +109,17 @@ __apply_patch() {
 #
 # Stores the current changes into a stash
 #
-# param $1 Path to the file where to store the current changes diff
+# param $1 Directory
+# param $2 Stash name
 #
 __store_stash() {
-	[ -d $STASH_DIRECTORY ] || mkdir $STASH_DIRECTORY
-	$ORIGINAL_SVN diff > $1
-	$ORIGINAL_SVN revert . --depth infinity 1>/dev/null
+	[ -d $1 ] || mkdir -p $1
+	file_path=$1/$2
+	$ORIGINAL_SVN diff > $file_path && $ORIGINAL_SVN revert . --depth infinity 1>/dev/null
 	$ORIGINAL_SVN st
 }
+
+__get_repository_id() {
+	svn info | grep UUID | awk -F': ' '{print $2}'
+}
+
