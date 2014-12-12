@@ -28,22 +28,17 @@ __diff() {
 	fi
 }
 
-# TODO
-# * list
-# * pop w/o a name
-# * pop w/ a name
-# * stash w/o a name
-# * stash w/ a name
-# * apply w/ a name
+#
+# Stores current changes as a patch file
+# and reverts all the current changes
 #
 __stash() {
 	if [ $# -eq 0 ] ; then
 		file=$STASH_DIRECTORY/$UNAMED_STASH_NAME$STASH_EXT
-		if [ -f file ] ; then
-			# TODO already unamed stash existing, print an error
+		if [ -f $file ] ; then
+			echo "ERROR : some changes are already stashed"
 		else
-			$ORIGINAL_SVN diff > file
-			$ORIGINAL_SVN revert . --depth infinity
+			__store_stash $file
 		fi
 	else
 		case "$1" in
@@ -52,32 +47,55 @@ __stash() {
 				;;
 			"pop")
 				file=$STASH_DIRECTORY/$UNAMED_STASH_NAME$STASH_EXT
-				if [ -f file ] ; then
-					patch -p0 -i file
-					rm file
+				if [ -f $file ] ; then
+					__apply_patch $file
+					rm $file
 				else
-					# TODO nothing stashed as unamed, print an error
+					echo "ERROR : nothing to pop out"
 				fi
 				;;
 			"apply")
 				shift
 				if [ $# -eq 0 ] ; then
-					# TODO error ...
+					echo "ERROR : you must provide a stash name when using 'svn stash apply'"
 				else
-					# TODO check if $1 stash exists
-					# TODO then apply $1 stash or not
+					file=$STASH_DIRECTORY/$1$STASH_EXT
+					if [ -f $file ] ; then
+						__apply_patch $file
+					else
+						echo "ERROR : $1 is not an existing stash"
+					fi
 				fi
 				;;
 			*)
 				file=$STASH_DIRECTORY/$1$STASH_EXT
-				if [ -f file ] ; then
-					patch -p0 -i file
-					rm file
+				if [ -f $file ] ; then
+					echo "ERROR : $1 is an already existing stash"
 				else
-					# TODO nothing stashed as $1, print an error
+					__store_stash $file
 				fi
 				;;
 		esac
 	fi
 }
 
+#
+# Apply a Subversion patch
+#
+# param $1	Path to the patch file to apply
+#
+__apply_patch() {
+	patch -p0 -i $1
+}
+
+#
+# Stores the current changes into a stash
+#
+# param $1 Path to the file where to store the current changes diff
+#
+__store_stash() {
+	[ -d $STASH_DIRECTORY ] || mkdir $STASH_DIRECTORY
+	$ORIGINAL_SVN diff > $1
+	$ORIGINAL_SVN revert . --depth infinity 1>/dev/null
+	$ORIGINAL_SVN st
+}
