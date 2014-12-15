@@ -16,9 +16,23 @@ svn() {
 		__log $@
 	elif [ "$1" = st ] || [ "$1" = st ] ; then
 		__status $@
+	elif [ "$1" = patch ] ; then
+		__patch $@
 	else
 		$ORIGINAL_SVN $@
 	fi	
+}
+
+__patch() {
+	if [ $# -eq 3 ] ; then
+		if [ "$2" = "--create" ] ; then
+			$ORIGINAL_SVN diff > $3
+		elif [ "$3" = "--create" ] ; then
+			$ORIGINAL_SVN diff > $2
+		fi
+	else
+		$ORIGINAL_SVN $@
+	fi
 }
 
 __log() {
