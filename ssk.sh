@@ -10,9 +10,15 @@ svn() {
 	elif [ "$1" = stash ] ; then
 		shift
 		__stash $@
+	elif [ "$1" = blame ] ; then
+		__blame $@
 	else
 		$ORIGINAL_SVN $@
 	fi	
+}
+
+__blame() {
+	@ORIGINAL_SVN $@ | less -r
 }
 
 #
