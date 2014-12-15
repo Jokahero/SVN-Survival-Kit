@@ -12,9 +12,15 @@ svn() {
 		__stash $@
 	elif [ "$1" = blame ] ; then
 		__blame $@
+	elif [ "$1" = log ] ; then
+		__log $@
 	else
 		$ORIGINAL_SVN $@
 	fi	
+}
+
+__log() {
+	$ORIGINAL_SVN $@ | less -r --clear-screen
 }
 
 __blame() {
