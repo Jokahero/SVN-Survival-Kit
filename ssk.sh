@@ -14,6 +14,8 @@ svn() {
 		__blame $@
 	elif [ "$1" = log ] ; then
 		__log $@
+	elif [ "$1" = st ] || [ "$1" = st ] ; then
+		__status $@
 	else
 		$ORIGINAL_SVN $@
 	fi	
@@ -25,6 +27,15 @@ __log() {
 
 __blame() {
 	@ORIGINAL_SVN $@ | less -r
+}
+
+__status() {
+	type colorsvn 1>/dev/null
+	if [ $? -eq 0 ] ; then
+		colorsvn $@
+	else
+		$ORIGINAL_SVN $@
+	fi
 }
 
 #
