@@ -82,7 +82,8 @@ __stash() {
 	else
 		case "$1" in
 			"list")
-				ls $STASH_DIRECTORY | awk -F. '{print $1}'	
+				repo_id=`__get_repository_id`
+				ls $STASH_DIRECTORY/$repo_id | awk -F. '{print $1}'	
 				;;
 			"pop")
 				repo_id=`__get_repository_id`
