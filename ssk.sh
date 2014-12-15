@@ -26,7 +26,7 @@ __log() {
 }
 
 __blame() {
-	@ORIGINAL_SVN $@ | less -r
+	$ORIGINAL_SVN $@ | less -r --clear-screen
 }
 
 __status() {
