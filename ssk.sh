@@ -2,7 +2,7 @@ STASH_DIRECTORY="$HOME/.ssk_stashes"
 STASH_EXT=".stash"
 UNAMED_STASH_NAME="unamed"
 
-ORIGINAL_SVN=/usr/bin/svn
+ORIGINAL_SVN=`which svn`
 
 svn() {
 	if [ "$1" = diff ] || [ "$1" = di ] ; then
