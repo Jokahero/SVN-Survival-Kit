@@ -18,9 +18,15 @@ svn() {
 		__status $@
 	elif [ "$1" = patch ] ; then
 		__patch $@
+	elif [ "$1" = purge ] ; then
+		__purge $@
 	else
 		$ORIGINAL_SVN $@
 	fi	
+}
+
+__purge() {
+	$ORIGINAL_SVN status --no-ignore | grep '^\?' | sed 's/^\?      //'  | xargs -Ixx rm -rf xx
 }
 
 __patch() {

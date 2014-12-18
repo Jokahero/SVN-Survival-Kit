@@ -46,3 +46,7 @@ Stashes are repository related (they are shared between branches of the same rep
 * **svn stash _my_stash_** : Stores the changes under a the name _my_stash_
 * **svn apply _my_stash_** : Apply the changes stored in the stash refered by the name _my_stash_ (the stash is not deleted and can be applied later)
 * **svn stash delete _my_stash_** : Deletes the stash identified by the name _my_stash_
+
+## Purge
+
+This command deletes ALL the unversionned files in the repository
