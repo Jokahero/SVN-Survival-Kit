@@ -14,7 +14,7 @@ svn() {
 		__blame $@
 	elif [ "$1" = log ] ; then
 		__log $@
-	elif [ "$1" = st ] || [ "$1" = st ] ; then
+	elif [ "$1" = status ] || [ "$1" = st ] ; then
 		__status $@
 	elif [ "$1" = patch ] ; then
 		__patch $@
